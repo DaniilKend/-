@@ -228,7 +228,6 @@ class App(QWidget):
         global sotryd
         global gosti
         
-        self.pass_label = QLabel('Пропускные документы: 0')
 
         self.issue_pass_button2 = QPushButton('Выдать пропуск на выход')
         self.issue_pass_button = QPushButton('Выдать пропуск')
@@ -253,7 +252,7 @@ class App(QWidget):
 
         layout = QVBoxLayout()
 
-        layout.addWidget(self.pass_label)
+        
 
 
         layout.addWidget(self.famil)
@@ -296,7 +295,7 @@ class App(QWidget):
        self.rows = cur2.fetchall()
        if self.rows.count((self.exit.text(),)) :
                print("Гость",self.exi,"Вышел")
-               cur2.execute('SELECT time_ek,time_ex FROM gosti WHERE pochta=?',self.pochtat)
+               cur2.execute('SELECT time_ek,time_ex FROM gosti WHERE pochta=?',(self.pochtat,))
                self.rows2 = cur2.fetchall()
                self.tkk = self.rows2[0]
                self.tk,self.tx = self.tkk
@@ -328,7 +327,7 @@ class App(QWidget):
                     self.celt=self.cel.text()
                     self.nomert=self.nomer.text()
                     self.pochtat=self.pochta.text()
-                    self.CORT=[(self.familt,self.namet,self.otcht,self.datet,self.celt,self.nomert,self.pochtat,self.time,"NULL")]
+                    self.CORT=[(self.familt,self.namet,self.otcht,self.datet,self.celt,self.nomert,self.pochtat,self.time,0)]
                     
                     cur2.execute('SELECT pochta FROM gosti')
                     self.rows = cur2.fetchall()
@@ -360,10 +359,7 @@ class App(QWidget):
 
                             cur2.executemany("INSERT INTO gosti VALUES(?, ? , ?, ?, ? , ?, ? , ?,?)",self.CORT)
                             base2.commit()
-                    cur2.execute('SELECT time_ek,time_ex FROM gosti WHERE pochta=?',self.pochtat)
-                    self.rows2 = cur2.fetchall()
-                    self.tkk = self.rows2[0]
-                    self.tk = self.tkk
+                    
                     
 
                     
@@ -381,3 +377,4 @@ if __name__ == '__main__':
     pass1 = App()
     pass_control.show()
     sys.exit(app.exec())
+    #DK
