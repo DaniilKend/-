@@ -2,7 +2,8 @@ import random
 import sys
 import typing
 from PyQt6.QtGui import QIcon, QFont, QPixmap, QMovie, QRegion
-from PyQt6 import QtCore
+from PyQt6 import QtCore 
+from PyQt6.QtCore import QSize, Qt 
 from PyQt6.QtWidgets import QApplication ,QListWidget , QMainWindow , QLabel,  QVBoxLayout, QGridLayout, QWidget, QLineEdit, QPushButton, QMessageBox
 
 f = open("periodictable.csv")
@@ -12,6 +13,7 @@ class Window(QMainWindow):
     def __init__(self) :
         super(Window,self).__init__()
         self.centralwidget =QWidget(self)
+        self.setFixedSize(QSize(670, 720))
 
         self.bat = QPushButton(self)
         
@@ -20,7 +22,8 @@ class Window(QMainWindow):
         self.pixmap = QPixmap("1920dd04dccc296ae63644e4845af50b.jpg")
         self.label.setPixmap(self.pixmap)
         
-        self.rull = QLineEdit(self)
+        self.rull = QLineEdit(self,placeholderText="Введите символ элемента-(H,He)")
+        self.rull.setGeometry(QtCore.QRect(250, 500, 210, 29))
         self.rull.move(250,500)
 
         self.bat.setText("Информация")

@@ -1,7 +1,6 @@
 import random
 import sys
-import typing
-from PyQt6 import QtCore 
+from PyQt6.QtCore import QSize, Qt 
 from PyQt6.QtWidgets import QApplication,QListWidget , QMainWindow , QLabel,  QVBoxLayout, QGridLayout, QWidget, QLineEdit, QPushButton, QMessageBox
  
 
@@ -9,23 +8,23 @@ class Window(QMainWindow):
     def __init__(self) :
         super(Window,self).__init__()
         self.centralwidget =QWidget(self)
-
+        self.setFixedSize(QSize(100, 330))
         self.bat = QPushButton(self)
         self.bat2 = QPushButton(self)
-        self.bat2.move(0,380)
+        self.bat2.move(0,270)
         
-        self.pro = QLineEdit(self)
-        self.pro.setText("0")
-        self.pro.move(0,400)
-        self.bat2.setText("Расчитать 1 ")
+        self.pro = QLineEdit(self,placeholderText="Введите N")
+        
+        self.pro.move(0,300)
+        self.bat2.setText("Раc:% выпад N")
         self.bat.setText("Расчитать")
      
-        self.rull = QLineEdit(self)
-        self.rull.setText("2")
+        self.rull = QLineEdit(self,placeholderText="Введите rull")
+        
         self.rull.move(0,40)
         self.rull.adjustSize()
-        self.coll = QLineEdit(self)
-        self.coll.setText("1")
+        self.coll = QLineEdit(self,placeholderText="Введите coll")
+        
         self.coll.move(0,60)
         self.coll.adjustSize()
         self.rez = QListWidget(self)
