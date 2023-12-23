@@ -1,8 +1,8 @@
 import sys
 import sqlite3 as sq 
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout , QLineEdit,QRadioButton
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout , QLineEdit,QRadioButton,QListWidget
 import time
-
+from PyQt6.QtCore import QSize, Qt 
 sotryd=20
 gosti=5
 
@@ -85,8 +85,10 @@ class PassControlApp(QWidget):
         global gosti
         self.cur = 0
         self.car = 0
-
-        
+        self.setFixedSize(QSize(280, 325))
+        self.rez = QListWidget(self)
+        self.rez.addItems(["Маниторинг:"])
+        self.rez.setFixedSize(257,100)
         
         self.RadioButton=QRadioButton("Есть ли машина?")
 
@@ -117,7 +119,7 @@ class PassControlApp(QWidget):
         layout.addWidget(self.issue_pass_button2)
         layout.addWidget(self.issue_pass_button)
         layout.addWidget(self.issue_pass_button3)
-        
+        layout.addWidget(self.rez)
 
         self.setLayout(layout)
         self.setWindowTitle('Пропускной пункт')
@@ -132,30 +134,34 @@ class PassControlApp(QWidget):
     def eks(self):
        global gosti
        global sotryd
-       self.dog=self.name.text().find("@")
+       
        self.poch = self.name.text()
        
        
        self.local_time = time.ctime(time.time())
        if self.car == 1 :
             if sotryd!=0:
-              if sotryd<5 and gosti>0:
-                   sotryd=sotryd-1
-                   gosti=gosti-1
-              else:
-                   sotryd=sotryd-1
+              
               cur.execute(f"""UPDATE rabotniki SET time_ek = ? where pochta=?""",[self.local_time,self.poch])
               
               cur.execute('SELECT pochta FROM rabotniki')
               self.rows = cur.fetchall()
               if self.rows.count((self.name.text(),)) :
-                  print("Сотрудник",self.poch,"Вошёл")
+                  self.rez.addItems([f"Сотрудник {self.poch} Вошёл"])
+                  if sotryd<5 and gosti>0:
+                   sotryd=sotryd-1
+                   gosti=gosti-1
+                  else:
+                   sotryd=sotryd-1
+                  self.rez.addItems([f'Порковочных мест для Сотрудников осталось:{sotryd}'])
               else:
-                    print("Такой почты нет в базе данных")
+                    self.rez.addItems(["Такой почты нет в базе данных"])
+
               base.commit()
               
             else:
-              print("Извините мест нет")
+              self.rez.addItems(["Извините мест на парковке не осталось."])
+              
        elif self.car == 0 :
             
           cur.execute(f"""UPDATE rabotniki SET time_ek = ? where pochta=?""",[self.local_time,self.poch])
@@ -163,9 +169,11 @@ class PassControlApp(QWidget):
           cur.execute('SELECT pochta FROM rabotniki')
           self.rows = cur.fetchall()
           if self.rows.count((self.name.text(),)) :
-                  print("Сотрудник",self.poch,"Вошёл")
+                  
+                  self.rez.addItems([f"Сотрудник {self.poch} Вошёл"])
           else:
-               print("Такой почты нет в базе данных")
+               self.rez.addItems(["Такой почты нет в базе данных"])
+               
           
 
        
@@ -175,11 +183,8 @@ class PassControlApp(QWidget):
        global gosti
        global sotryd
        self.poch = self.name.text()
-       if self.car == 1:
-            if sotryd<5 and gosti<5 :
-                   sotryd=sotryd+1
-                   gosti=gosti+1
-            sotryd=sotryd+1
+       
+
             
        
        self.local_time = time.ctime(time.time())
@@ -188,9 +193,20 @@ class PassControlApp(QWidget):
        cur.execute('SELECT pochta FROM rabotniki')
        self.rows = cur.fetchall()
        if self.rows.count((self.name.text(),)) :
-                  print("Сотрудник",self.poch,"Вышел")
+                  self.rez.addItems([f"Сотрудник {self.poch} Вышел"])
+                  if self.car == 1:
+                     if sotryd<5 and gosti<5 :
+                        sotryd=sotryd+1
+                        gosti=gosti+1
+                        self.rez.addItems([f'Порковочных мест для Сотрудников осталось:{sotryd}'])
+                     else:
+                        sotryd=sotryd+1
+                        self.rez.addItems([f'Порковочных мест для Сотрудников осталось:{sotryd}'])
+
+                 
        else:
-                    print("Такой почты нет в базе данных")
+                    self.rez.addItems(["Такой почты нет в базе данных"])
+                    
        base.commit()
 
 
@@ -227,8 +243,11 @@ class App(QWidget):
         global base2
         global sotryd
         global gosti
+        self.setFixedSize(QSize(335, 450))
         
-
+        self.rez = QListWidget(self)
+        self.rez.addItems(["Маниторинг:"])
+        self.rez.setFixedSize(320,100)
         self.issue_pass_button2 = QPushButton('Выдать пропуск на выход')
         self.issue_pass_button = QPushButton('Выдать пропуск')
         self.RadioButton=QRadioButton("Есть ли машина?")
@@ -268,6 +287,7 @@ class App(QWidget):
         layout.addWidget(self.issue_pass_button)
         layout.addWidget(self.exit)
         layout.addWidget(self.issue_pass_button2)
+        layout.addWidget(self.rez)
 
         self.setLayout(layout)
         self.setWindowTitle('Пропускной пункт для гостей')
@@ -278,14 +298,13 @@ class App(QWidget):
               self.car = 0
          
          if gosti ==0:
-                print("Порковочных мест нет приходите позже!!!")    
+                self.rez.addItems(["Порковочных мест нет приходите позже!!!"])
+                  
     
     def vremPROP(self):
        global gosti
        global sotryd
-       if self.car == 1:
-            sotryd=sotryd+1
-            gosti=gosti+1
+       
        self.exi = self.exit.text()
        self.time = time.time() 
       
@@ -294,18 +313,26 @@ class App(QWidget):
        cur2.execute('SELECT pochta FROM gosti')
        self.rows = cur2.fetchall()
        if self.rows.count((self.exit.text(),)) :
-               print("Гость",self.exi,"Вышел")
+               self.rez.addItems([f"Гость {self.exi} Вышел"])
+          
                cur2.execute('SELECT time_ek,time_ex FROM gosti WHERE pochta=?',(self.pochtat,))
                self.rows2 = cur2.fetchall()
                self.tkk = self.rows2[0]
                self.tk,self.tx = self.tkk
                
                if self.tx-self.tk>10:
-                     print(f"Гость {self.exi} - привысил время посещения на {(self.tx)-(self.tk)-10} сек, 'ОБРАТИТЕСЬ К НАЧАЛЬНИКУ ОХРАНЫ'")
+                     self.rez.addItems([f"Гость {self.exi} - привысил время посещения на {(round(self.tx)-(self.tk)-10)} сек", "'ОБРАТИТЕСЬ К НАЧАЛЬНИКУ ОХРАНЫ'"])
+                     
                if self.tx-self.tk<10:
-                     print(f"Гость {self.exi} пробыл внутри {(self.tx)-(self.tk)} сек")
+                     if self.car == 1:
+                       sotryd=sotryd+1
+                       gosti=gosti+1
+                     self.rez.addItems([f"Гость {self.exi} - пробыл внутри {round((self.tx)-(self.tk))} сек"])
+                     self.rez.addItems([f'Порковочных мест для гостей осталось:{gosti}'])
+                     
        else:
-               print("Такой почты нет в базе данных")
+               self.rez.addItems(["Такой почты нет в базе данных"])
+               
        
        
     
@@ -315,10 +342,10 @@ class App(QWidget):
         global sotryd
         if self.car == 1:
              if gosti ==0:
-                  print("Парковочных мест нет приходите позже!!!")
+                  self.rez.addItems(["Парковочных мест нет приходите позже!!!"])
+                  
              else:
-                    sotryd=sotryd-1
-                    gosti=gosti-1
+                    
                     self.time = time.time() 
                     self.familt=self.famil.text()
                     self.namet=self.name.text()
@@ -332,9 +359,14 @@ class App(QWidget):
                     cur2.execute('SELECT pochta FROM gosti')
                     self.rows = cur2.fetchall()
                     if self.rows.count((self.pochta.text(),)) :
-                            print("Такая почта уже есть")
+                            self.rez.addItems(["Такая почта уже есть"])
+                            
+                            
                     else:
-                            print("Гость",self.pochtat,"Вошёл")
+                            self.rez.addItems([f"Гость {self.pochtat} Вошёл"])
+                            sotryd=sotryd-1
+                            gosti=gosti-1
+                            self.rez.addItems([f'Порковочных мест для гостей осталось:{gosti}'])
                             cur2.executemany("INSERT INTO gosti VALUES(?, ? , ?, ?, ? , ?, ? , ?,?)",self.CORT)
                             base2.commit()
                     
@@ -353,9 +385,11 @@ class App(QWidget):
                     cur2.execute('SELECT pochta FROM gosti')
                     self.rows = cur2.fetchall()
                     if self.rows.count((self.pochta.text(),)) :
-                            print("Такая почта уже есть")
+                            self.rez.addItems(["Такая почта уже есть"])
+                            
                     else:
-                            print("Гость",self.pochtat,"Вошёл")
+                            self.rez.addItems([f"Гость {self.pochtat} Вошёл"])
+                            
 
                             cur2.executemany("INSERT INTO gosti VALUES(?, ? , ?, ?, ? , ?, ? , ?,?)",self.CORT)
                             base2.commit()
