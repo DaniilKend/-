@@ -148,7 +148,7 @@ class PassControlApp(QWidget):
               self.rows = cur.fetchall()
               if self.rows.count((self.name.text(),)) :
                   self.rez.addItems([f"Сотрудник {self.poch} Вошёл"])
-                  if sotryd<5 and gosti>0:
+                  if sotryd<=5 and gosti>0:
                    sotryd=sotryd-1
                    gosti=gosti-1
                   else:
@@ -195,7 +195,7 @@ class PassControlApp(QWidget):
        if self.rows.count((self.name.text(),)) :
                   self.rez.addItems([f"Сотрудник {self.poch} Вышел"])
                   if self.car == 1:
-                     if sotryd<5 and gosti<5 :
+                     if sotryd<=5 and gosti<5 :
                         sotryd=sotryd+1
                         gosti=gosti+1
                         self.rez.addItems([f'Порковочных мест для Сотрудников осталось:{sotryd}'])
